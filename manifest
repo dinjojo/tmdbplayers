@@ -1,0 +1,502 @@
+logging:
+  global:
+    provider: 'ELK' # ElasticSearch, Logstash, Kibana
+    log_level: 'info'
+    format: 'json'
+    retention: '7d' # retention period
+    index_pattern: 'logs-*'
+    buffer_size: '10MB'
+    flush_interval: '5s'
+
+  services:
+    serviceA:
+      enabled: true
+      log_level: 'debug'
+      format: 'json'
+      retention: '7d'
+      custom_fields:
+        service: 'serviceA'
+        team: 'teamA'
+    serviceB:
+      enabled: true
+      log_level: 'warn'
+      format: 'text'
+      retention: '14d'
+      custom_fields:
+        service: 'serviceB'
+        team: 'teamB'
+    serviceC:
+      enabled: true
+      log_level: 'info'
+      format: 'json'
+      retention: '7d'
+      custom_fields:
+        service: 'serviceC'
+        team: 'teamC'
+
+
+
+
+
+metrics:
+  global:
+    provider: 'Prometheus'
+    scrape_interval: '15s'
+    retention: '30d'
+    scrape_timeout: '10s'
+    labels:
+      environment: 'production'
+      region: 'us-east-1'
+
+  services:
+    serviceA:
+      enabled: true
+      custom_metrics:
+        - name: 'requests_total'
+          type: 'counter'
+          description: 'Total number of requests'
+          labels:
+            service: 'serviceA'
+            status: '200'
+        - name: 'requests_failed_total'
+          type: 'counter'
+          description: 'Total number of failed requests'
+          labels:
+            service: 'serviceA'
+        - name: 'request_duration_seconds'
+          type: 'histogram'
+          description: 'Duration of requests in seconds'
+          buckets: [0.1, 0.2, 0.5, 1, 2, 5]
+    serviceB:
+      enabled: true
+      custom_metrics:
+        - name: 'requests_total'
+          type: 'counter'
+          description: 'Total number of requests'
+          labels:
+            service: 'serviceB'
+        - name: 'errors_total'
+          type: 'counter'
+          description: 'Total number of errors'
+          labels:
+            service: 'serviceB'
+            error_type: '500'
+        - name: 'request_duration_seconds'
+          type: 'histogram'
+          description: 'Duration of requests in seconds'
+          buckets: [0.1, 0.2, 0.5, 1, 2, 5]
+        - name: 'cpu_usage'
+          type: 'gauge'
+          description: 'CPU usage percentage'
+          labels:
+            service: 'serviceB'
+            instance: 'instance1'
+    serviceC:
+      enabled: true
+      custom_metrics:
+        - name: 'requests_total'
+          type: 'counter'
+          description: 'Total number of requests'
+          labels:
+            service: 'serviceC'
+        - name: 'errors_total'
+          type: 'counter'
+          description: 'Total number of errors'
+          labels:
+            service: 'serviceC'
+        - name: 'request_duration_seconds'
+          type: 'histogram'
+          description: 'Duration of requests in seconds'
+          buckets: [0.1, 0.2, 0.5, 1, 2, 5]
+        - name: 'memory_usage'
+          type: 'gauge'
+          description: 'Memory usage in bytes'
+          labels:
+            service: 'serviceC'
+            instance: 'instance1'
+
+
+tracing:
+  global:
+    provider: 'Jaeger'
+    sampling_rate: '0.1'
+    retention: '7d'
+    trace_id_128bit: true
+    tags:
+      environment: 'production'
+      region: 'us-east-1'
+
+  services:
+    serviceA:
+      enabled: true
+      sampling_rate: '0.05'
+      tags:
+        service: 'serviceA'
+    serviceB:
+      enabled: true
+      sampling_rate: '0.1'
+      tags:
+        service: 'serviceB'
+    serviceC:
+      enabled: false
+
+
+alerts:
+  provider: 'AlertManager'
+  rules:
+    - name: 'High Error Rate'
+      condition: 'serviceB_errors_total > 100'
+      for: '5m'
+      severity: 'critical'
+      annotations:
+        summary: 'High error rate detected in serviceB'
+        description: 'ServiceB has exceeded 100 errors in the last 5 minutes.'
+    - name: 'High CPU Usage'
+      condition: 'serviceB_cpu_usage > 80'
+      for: '1m'
+      severity: 'warning'
+      annotations:
+        summary: 'High CPU usage detected in serviceB'
+        description: 'ServiceB CPU usage has exceeded 80% in the last minute.'
+    - name: 'Memory Leak'
+      condition: 'serviceC_memory_usage > 1GB'
+      for: '10m'
+      severity: 'critical'
+      annotations:
+        summary: 'Possible memory leak in serviceC'
+        description: 'ServiceC memory usage has exceeded 1GB for the last 10 minutes.'
+
+
+
+version: '1.0'
+
+global:
+  observability:
+    logging:
+      provider: 'ELK' # ElasticSearch, Logstash, Kibana
+      log_level: 'info'
+      format: 'json'
+      retention: '7d' # retention period
+      index_pattern: 'logs-*'
+      buffer_size: '10MB'
+      flush_interval: '5s'
+    metrics:
+      provider: 'Prometheus'
+      scrape_interval: '15s'
+      retention: '30d'
+      scrape_timeout: '10s'
+      labels:
+        environment: 'production'
+        region: 'us-east-1'
+    tracing:
+      provider: 'Jaeger'
+      sampling_rate: '0.1'
+      retention: '7d'
+      trace_id_128bit: true
+      tags:
+        environment: 'production'
+        region: 'us-east-1'
+
+services:
+  serviceA:
+    logging:
+      enabled: true
+      log_level: 'debug'
+      format: 'json'
+      retention: '7d'
+      custom_fields:
+        service: 'serviceA'
+        team: 'teamA'
+    metrics:
+      enabled: true
+      custom_metrics:
+        - name: 'requests_total'
+          type: 'counter'
+          description: 'Total number of requests'
+          labels:
+            service: 'serviceA'
+            status: '200'
+        - name: 'requests_failed_total'
+          type: 'counter'
+          description: 'Total number of failed requests'
+          labels:
+            service: 'serviceA'
+        - name: 'request_duration_seconds'
+          type: 'histogram'
+          description: 'Duration of requests in seconds'
+          buckets: [0.1, 0.2, 0.5, 1, 2, 5]
+    tracing:
+      enabled: true
+      sampling_rate: '0.05'
+      tags:
+        service: 'serviceA'
+
+  serviceB:
+    logging:
+      enabled: true
+      log_level: 'warn'
+      format: 'text'
+      retention: '14d'
+      custom_fields:
+        service: 'serviceB'
+        team: 'teamB'
+    metrics:
+      enabled: true
+      custom_metrics:
+        - name: 'requests_total'
+          type: 'counter'
+          description: 'Total number of requests'
+          labels:
+            service: 'serviceB'
+        - name: 'errors_total'
+          type: 'counter'
+          description: 'Total number of errors'
+          labels:
+            service: 'serviceB'
+            error_type: '500'
+        - name: 'request_duration_seconds'
+          type: 'histogram'
+          description: 'Duration of requests in seconds'
+          buckets: [0.1, 0.2, 0.5, 1, 2, 5]
+        - name: 'cpu_usage'
+          type: 'gauge'
+          description: 'CPU usage percentage'
+          labels:
+            service: 'serviceB'
+            instance: 'instance1'
+    tracing:
+      enabled: true
+      sampling_rate: '0.1'
+      tags:
+        service: 'serviceB'
+
+  serviceC:
+    logging:
+      enabled: true
+      log_level: 'info'
+      format: 'json'
+      retention: '7d'
+      custom_fields:
+        service: 'serviceC'
+        team: 'teamC'
+    metrics:
+      enabled: true
+      custom_metrics:
+        - name: 'requests_total'
+          type: 'counter'
+          description: 'Total number of requests'
+          labels:
+            service: 'serviceC'
+        - name: 'errors_total'
+          type: 'counter'
+          description: 'Total number of errors'
+          labels:
+            service: 'serviceC'
+        - name: 'request_duration_seconds'
+          type: 'histogram'
+          description: 'Duration of requests in seconds'
+          buckets: [0.1, 0.2, 0.5, 1, 2, 5]
+        - name: 'memory_usage'
+          type: 'gauge'
+          description: 'Memory usage
+
+
+
+
+version: '1.0'
+
+global:
+  observability:
+    logging:
+      provider: 'ELK' # ElasticSearch, Logstash, Kibana
+      log_level: 'info'
+      format: 'json'
+      retention: '7d' # retention period
+      index_pattern: 'logs-*'
+      buffer_size: '10MB'
+      flush_interval: '5s'
+    metrics:
+      provider: 'Prometheus'
+      scrape_interval: '15s'
+      retention: '30d'
+      scrape_timeout: '10s'
+      labels:
+        environment: 'production'
+        region: 'us-east-1'
+    tracing:
+      provider: 'Jaeger'
+      sampling_rate: '0.1'
+      retention: '7d'
+      trace_id_128bit: true
+      tags:
+        environment: 'production'
+        region: 'us-east-1'
+
+services:
+  serviceA:
+    logging:
+      enabled: true
+      log_level: 'debug'
+      format: 'json'
+      retention: '7d'
+      custom_fields:
+        service: 'serviceA'
+        team: 'teamA'
+    metrics:
+      enabled: true
+      custom_metrics:
+        - name: 'requests_total'
+          type: 'counter'
+          description: 'Total number of requests'
+          labels:
+            service: 'serviceA'
+            status: '200'
+        - name: 'requests_failed_total'
+          type: 'counter'
+          description: 'Total number of failed requests'
+          labels:
+            service: 'serviceA'
+        - name: 'request_duration_seconds'
+          type: 'histogram'
+          description: 'Duration of requests in seconds'
+          buckets: [0.1, 0.2, 0.5, 1, 2, 5]
+    tracing:
+      enabled: true
+      sampling_rate: '0.05'
+      tags:
+        service: 'serviceA'
+
+  serviceB:
+    logging:
+      enabled: true
+      log_level: 'warn'
+      format: 'text'
+      retention: '14d'
+      custom_fields:
+        service: 'serviceB'
+        team: 'teamB'
+    metrics:
+      enabled: true
+      custom_metrics:
+        - name: 'requests_total'
+          type: 'counter'
+          description: 'Total number of requests'
+          labels:
+            service: 'serviceB'
+        - name: 'errors_total'
+          type: 'counter'
+          description: 'Total number of errors'
+          labels:
+            service: 'serviceB'
+            error_type: '500'
+        - name: 'request_duration_seconds'
+          type: 'histogram'
+          description: 'Duration of requests in seconds'
+          buckets: [0.1, 0.2, 0.5, 1, 2, 5]
+        - name: 'cpu_usage'
+          type: 'gauge'
+          description: 'CPU usage percentage'
+          labels:
+            service: 'serviceB'
+            instance: 'instance1'
+    tracing:
+      enabled: true
+      sampling_rate: '0.1'
+      tags:
+        service: 'serviceB'
+
+  serviceC:
+    logging:
+      enabled: true
+      log_level: 'info'
+      format: 'json'
+      retention: '7d'
+      custom_fields:
+        service: 'serviceC'
+        team: 'teamC'
+    metrics:
+      enabled: true
+      custom_metrics:
+        - name: 'requests_total'
+          type: 'counter'
+          description: 'Total number of requests'
+          labels:
+            service: 'serviceC'
+        - name: 'errors_total'
+          type: 'counter'
+          description: 'Total number of errors'
+          labels:
+            service: 'serviceC'
+        - name: 'request_duration_seconds'
+          type: 'histogram'
+          description: 'Duration of requests in seconds'
+          buckets: [0.1, 0.2, 0.5, 1, 2, 5]
+        - name: 'memory_usage'
+          type: 'gauge'
+          description: 'Memory usage in bytes'
+          labels:
+            service: 'serviceC'
+            instance: 'instance1'
+    tracing:
+      enabled: false
+
+common_dashboard:
+  provider: 'Grafana'
+  dashboards:
+    - name: 'Service Performance'
+      panels:
+        - title: 'Request Rate'
+          metric: 'serviceA_requests_total'
+          type: 'line'
+          interval: '1m'
+          thresholds:
+            - '10': 'green'
+            - '20': 'yellow'
+            - '50': 'red'
+        - title: 'Error Rate'
+          metric: 'serviceB_errors_total'
+          type: 'line'
+          interval: '1m'
+          thresholds:
+            - '1': 'green'
+            - '5': 'yellow'
+            - '10': 'red'
+        - title: 'CPU Usage'
+          metric: 'serviceB_cpu_usage'
+          type: 'gauge'
+          thresholds:
+            - '50': 'green'
+            - '70': 'yellow'
+            - '90': 'red'
+        - title: 'Memory Usage'
+          metric: 'serviceC_memory_usage'
+          type: 'gauge'
+          thresholds:
+            - '500MB': 'green'
+            - '1GB': 'yellow'
+            - '2GB': 'red'
+
+alerts:
+  provider: 'AlertManager'
+  rules:
+    - name: 'High Error Rate'
+      condition: 'serviceB_errors_total > 100'
+      for: '5m'
+      severity: 'critical'
+      annotations:
+        summary: 'High error rate detected in serviceB'
+        description: 'ServiceB has exceeded 100 errors in the last 5 minutes.'
+    - name: 'High CPU Usage'
+      condition: 'serviceB_cpu_usage > 80'
+      for: '1m'
+      severity: 'warning'
+      annotations:
+        summary: 'High CPU usage detected in serviceB'
+        description: 'ServiceB CPU usage has exceeded 80% in the last minute.'
+    - name: 'Memory Leak'
+      condition: 'serviceC_memory_usage > 1GB'
+      for: '10m'
+      severity: 'critical'
+      annotations:
+        summary: 'Possible memory leak in serviceC'
+        description: 'ServiceC memory usage has exceeded 1GB for the last 10 minutes.'
