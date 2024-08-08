@@ -1,7 +1,6 @@
 import requests
 import yaml
 import json
-from pathlib import Path
 
 # Load the YAML file
 def load_yaml(file_path: str) -> dict:
@@ -21,10 +20,13 @@ def fetch_metrics(endpoint: str, headers: dict) -> list:
 # Validate metrics
 def validate_metrics(defined_metrics: dict, available_metrics: list) -> dict:
     missing_metrics = {}
-    for group, metrics in defined_metrics.items():
-        missing = [metric for metric in metrics if metric not in available_metrics]
-        if missing:
-            missing_metrics[group] = missing
+    for service, details in defined_metrics.items():
+        if 'metrics' in details and details['metrics']['enabled']:
+            for metric in details['metrics']['custom_metrics']:
+                if metric['name'] not in available_metrics:
+                    if service not in missing_metrics:
+                        missing_metrics[service] = []
+                    missing_metrics[service].append(metric)
     return missing_metrics
 
 # Save missing metrics to JSON file
@@ -34,7 +36,7 @@ def save_missing_metrics(missing_metrics: dict, output_file: str) -> None:
 
 # Main function
 def main() -> None:
-    yaml_file = 'metrics.yaml'
+    yaml_file = 'manifest.yaml'
     output_file = 'missing_metrics.json'
     cortex_endpoint = 'https://<your-cortex-instance>/api/v1/label/__name__/values'
     headers = {
@@ -43,7 +45,7 @@ def main() -> None:
     }
 
     # Load defined metrics from YAML
-    defined_metrics = load_yaml(yaml_file)['department']
+    defined_metrics = load_yaml(yaml_file)
 
     # Fetch available metrics from Cortex
     available_metrics = fetch_metrics(cortex_endpoint, headers)
