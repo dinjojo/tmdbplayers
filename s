@@ -25,3 +25,31 @@ Key Achievements:
 
     Control Mapping: Documented and outlined every control across these applications, contributing to clearer process oversight and governance.
     Collaboration: Worked closely with the Operations team to ensure alignment and comprehensive coverage of all controls.
+
+
+Let’s align the principles you provided with your year-end review:
+Do the Right Thing
+
+    Act with Integrity: In all projects, including building the ESM Stack plant for observability and onboarding Dividend Projection flows, I prioritized transparency and accountability. I actively reported bugs and collaborated with the ESM team to ensure timely fixes, maintaining the integrity of the platform.
+    Think like an Owner: My focus on stabilizing the ESM plant and improving observability tools was driven by long-term goals, ensuring that the central platform could effectively support future onboarding needs. This approach supports sustainable value for the organization.
+    Honesty and Character: In my interactions with cross-team members during knowledge-sharing sessions and onboarding processes, I maintained open communication, ensuring challenges and successes were addressed directly.
+
+Put Clients First
+
+    Client-Centric Approach: I always kept the needs of our internal stakeholders and end users top of mind, especially when implementing Data Quality (DQ) checks across Dividend Projection vendors, which directly addressed rising user concerns.
+    Collaboration Across Teams: I worked closely with colleagues in RPE, DataLink, Fabric, and Operations teams, delivering the best possible solutions for onboarding apps and defining taxonomies across SRD applications.
+    Listening to Clients: By addressing data quality issues and ensuring the onboarding of critical flows like Bloomberg and SOLA, I responded to user concerns, continuously improving services based on their feedback.
+
+Lead with Exceptional Ideas
+
+    Breaking New Ground: I contributed to the innovation of tools and processes within the ESM Stack plant, streamlining onboarding for observability apps and leading to improved system stability and efficiency.
+    Gaining New Insight: By leveraging input from multiple teams during knowledge-sharing sessions, I was able to incorporate different perspectives and enhance the overall onboarding process, making it easier for teams to use observability apps.
+    Driving Innovation: My work on DQ checks and onboarding new data flows in Fabric demonstrates a commitment to finding new solutions to improve data quality and streamline operational workflows.
+    Continuous Improvement: I remained vigilant about areas for improvement, such as collaborating with the ESM team to resolve bugs and refining processes to enhance platform reliability.
+
+Commit to Diversity & Inclusion
+
+    Value Differences: In hosting knowledge-sharing sessions across RPE, DataLink, and Fabric teams, I facilitated an environment where diverse perspectives were encouraged and valued.
+    Creating Belonging: I worked to ensure all team members felt heard and respected during collaboration, particularly when onboarding new applications and addressing complex data challenges.
+    Challenging Counterproductive Behavior: Throughout the year, I promoted an inclusive and respectful work culture by encouraging open dialogue and addressing any issues that might hinder collaboration.
+    Diverse Talent Development: By working with cross-functional teams and writing comprehensive documentation, I contributed to an environment that supports the growth of talent from different backgrounds.
