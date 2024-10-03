@@ -19,3 +19,9 @@
         Bloomberg Flow: Successfully onboarded Bloomberg flow in Fabric and initiated UAT testing with Data Services, ensuring smooth integration.
         SOLA Flow: Onboarded SOLA flow in Fabric Gold, with the backbridge implementation planned for the upcoming month.
         Data Quality Checks: Implemented Data Quality (DQ) checks across Dividend Projection vendors to address a growing number of user queries regarding data integrity, ensuring higher standards of accuracy.
+        4. SRD Application Taxonomy Definition
+Objective: Supported the Operations team in defining the taxonomy across major SRD applications like P2 and EA.
+Key Achievements:
+
+    Control Mapping: Documented and outlined every control across these applications, contributing to clearer process oversight and governance.
+    Collaboration: Worked closely with the Operations team to ensure alignment and comprehensive coverage of all controls.
