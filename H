@@ -1,15 +1,16 @@
-Here’s a revised version with a more neutral tone, focusing on areas of improvement as well:
 
----
-
-Deepak has demonstrated some alignment with the Firm’s values, though there are areas where further improvement could be made. In terms of **putting clients first**, Deepak has worked with the Datalink team to transition from Splunk dashboards to Grafana, aiming to improve performance. However, while the initiative shows effort, there have been challenges in fully addressing RPE team’s specific needs, and further attention to fine-tuning the observability solution could improve its overall impact.
-
-Regarding **leading with exceptional ideas**, Deepak developed a utility to simplify custom metric creation through SQL queries. While the utility is useful, its adoption has been slower than expected, and it may require further refinement or additional training for users to realize its full potential. More proactive engagement with the users could help accelerate its adoption.
-
-When it comes to **doing the right thing**, Deepak maintains code quality through reviews and feedback. However, there have been instances where follow-up on discrepancies in code could have been more thorough. His communication regarding Datalink work is generally transparent, but there are occasional delays in providing updates, which can affect the timeliness of information shared with stakeholders.
-
-In terms of **giving back**, Deepak has participated in activities like Gowshaka's initiatives, but his involvement has been limited, and there could be more proactive engagement in community efforts. While his contributions are valuable, there is room for greater consistency in his participation.
-
-Overall, Deepak has shown technical capability and a sense of responsibility but could benefit from more consistent execution, enhanced communication, and deeper involvement in community and team initiatives.
-
----
+SELECT 
+    o.name AS table_name,
+    CASE 
+        WHEN i.lockscheme = 0 THEN 'Allpages'
+        WHEN i.lockscheme = 1 THEN 'Datapages'
+        WHEN i.lockscheme = 2 THEN 'Datarows'
+        ELSE 'Unknown'
+    END AS locking_scheme
+FROM 
+    sysobjects o
+JOIN 
+    sysindexes i ON o.id = i.id
+WHERE 
+    o.type = 'U'  -- 'U' stands for user tables
+    AND i.indid < 2; -- 0 = table-level, 1 = clustered index
