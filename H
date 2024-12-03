@@ -1,45 +1,114 @@
-To determine the best approach for implementing anomaly detection, here's an optimal order to proceed based on data complexity, ease of implementation, and the type of anomalies you want to detect:
-1. Start with Facebook Prophet
+Here's an updated **Architecture Decision Review Document**, incorporating statistical models for a comprehensive evaluation.
 
-    Why: It's easy to implement, handles irregular time-series data well, and automatically handles seasonality and missing values. If your primary data concerns time-series anomalies (e.g., listing prices, tick sizes), Prophet should be your first choice.
-    Steps:
-        Apply Prophet to historical time-series data (e.g., listing prices or expiry dates).
-        Generate forecasts and use the model to identify anomalies by comparing actual data to the predicted values.
+---
 
-2. Try Z-Score/Statistical Thresholding for Simple Fields
+### **Architecture Decision Review Document**  
+#### **Subject**: Anomaly Detection Models for Reference Data  
 
-    Why: It's a simple and fast method for low-dimensional static data that follows a Gaussian distribution (e.g., sector classification or tick size).
-    Steps:
-        Calculate the Z-score (deviation from the mean) for each data point.
-        Flag data points that exceed a certain threshold (e.g., ±3 standard deviations) as anomalies.
+---
 
-3. Use SARIMA for Well-Defined, Stationary Time-Series Data
+### **1. Context**  
+The reference data system ingests feeds from vendors (Reuters, Bloomberg) for equities and derivatives. The data includes attributes like listing price, tick size, expiry date, and sector classifications. The goal is to identify anomalies in:  
+1. **Time-Series Data**: (e.g., listing price, tick size trends).  
+2. **Multi-Dimensional Data**: (e.g., cross-field inconsistencies).  
 
-    Why: If Prophet’s forecasts are insufficient (e.g., due to lack of seasonality), SARIMA can be a more controlled choice for stationary, seasonal data.
-    Steps:
-        Use SARIMA for time-series data that require explicit modeling of trends and seasonality (e.g., for listing prices that follow a regular seasonal pattern).
-        Tune the ARIMA parameters and validate the model before applying anomaly detection.
+---
 
-4. Implement Isolation Forest for Cross-Field Anomalies
+### **2. Options Considered**
 
-    Why: Once you're confident with time-series anomaly detection, Isolation Forest is the next step for detecting multi-dimensional anomalies across different fields (e.g., discrepancies between listing price and sector). It handles high-dimensional data and doesn't require assumptions about data distribution.
-    Steps:
-        Apply Isolation Forest on datasets with multiple features, like vendor feeds or attribute combinations.
-        Tune parameters like the number of trees and the maximum sample size for optimal results.
+#### **Option 1: SARIMA (Seasonal AutoRegressive Integrated Moving Average)**  
+- **Description**: A statistical model for univariate time-series analysis, capturing trends and seasonality.  
+- **Pros**:  
+  - Clear and interpretable results.  
+  - Explicitly models seasonality and trends.  
+  - Well-suited for clean, stationary time-series.  
+- **Cons**:  
+  - Limited to univariate data.  
+  - Requires stationarity (may need data transformations).  
+  - Complex parameter tuning (seasonal order, ARIMA terms).  
+- **Suitable Data**:  
+  - **Univariate Time-Series**: Daily listing prices, tick sizes, expiry dates with seasonal patterns.  
 
-5. Consider Autoencoders for High-Complexity, Multi-Dimensional Data
+---
 
-    Why: If your data complexity increases and you're dealing with large datasets or non-linear patterns, Autoencoders can help capture intricate relationships between fields. However, they are computationally intensive and require deep learning knowledge.
-    Steps:
-        Implement Autoencoders after you've addressed basic anomalies using simpler models.
-        Fine-tune the architecture (layers, neurons) for anomaly detection based on the reconstruction error.
+#### **Option 2: Facebook Prophet**  
+- **Description**: A modern statistical tool for univariate time-series forecasting, designed for irregular and seasonal data.  
+- **Pros**:  
+  - Minimal pre-processing, handles missing data and outliers.  
+  - Easy to implement with a user-friendly API.  
+  - Decomposes forecasts into interpretable components (trend, seasonality, holidays).  
+- **Cons**:  
+  - Univariate focus; doesn’t handle multi-dimensional data.  
+  - Limited control over advanced parameter tuning.  
+- **Suitable Data**:  
+  - **Univariate Time-Series**: Listing prices, tick sizes with irregularities or external seasonality.  
 
-Summary of Order:
+---
 
-    Start with Facebook Prophet for time-series anomalies (easy implementation and robust handling of irregular data).
-    Use Z-Score/Statistical Thresholding for simple, low-dimensional data.
-    Try SARIMA for more controlled, seasonal time-series data.
-    Move to Isolation Forest for multi-dimensional anomaly detection.
-    Consider Autoencoders if your data is highly complex and high-dimensional.
+#### **Option 3: Z-Score/Statistical Thresholding**  
+- **Description**: A simple statistical method that flags anomalies based on deviations from the mean.  
+- **Pros**:  
+  - Easy to implement and explain.  
+  - Effective for normally distributed, low-dimensional data.  
+- **Cons**:  
+  - Assumes Gaussian distribution, which might not fit real-world data.  
+  - Cannot capture seasonality, trends, or complex relationships.  
+- **Suitable Data**:  
+  - **Low-Dimensional Static Data**: Single fields like sector classification or tick size without time dependency.  
 
-This approach allows you to handle simpler cases first, ensuring faster implementation and refining your detection models as complexity increases. Would you like help with setting up any specific model?
+---
+
+#### **Option 4: Isolation Forest**  
+- **Description**: An unsupervised machine learning model that isolates anomalies in multi-dimensional data.  
+- **Pros**:  
+  - Handles high-dimensional, non-linear relationships.  
+  - Robust to outliers in multi-dimensional datasets.  
+  - Doesn’t require data stationarity or distribution assumptions.  
+- **Cons**:  
+  - Requires feature engineering and hyperparameter tuning.  
+  - Less interpretable compared to statistical models.  
+- **Suitable Data**:  
+  - **Multi-Dimensional Static Data**: Cross-field relationships (e.g., listing price, tick size, and sector consistency).  
+
+---
+
+#### **Option 5: Autoencoders**  
+- **Description**: Neural networks trained to reconstruct input data, with reconstruction error used to identify anomalies.  
+- **Pros**:  
+  - Captures complex, high-dimensional data relationships.  
+  - Effective for non-linear and non-stationary patterns.  
+- **Cons**:  
+  - Computationally intensive and harder to interpret.  
+  - Requires deep learning expertise.  
+- **Suitable Data**:  
+  - **Complex Multi-Dimensional Data**: High-volume reference feeds with intricate relationships.  
+
+---
+
+### **3. Decision Criteria**  
+
+| Criterion                  | SARIMA         | Prophet        | Z-Score        | Isolation Forest  | Autoencoders     |  
+|----------------------------|----------------|----------------|----------------|-------------------|------------------|  
+| **Ease of Implementation** | Moderate       | Easy           | Easy           | Moderate          | Difficult        |  
+| **Data Type**              | Univariate     | Univariate     | Low-Dimensional| Multi-Dimensional | Multi-Dimensional|  
+| **Scalability**            | Low            | Moderate       | Low            | High              | High             |  
+| **Explainability**         | High           | High           | High           | Moderate          | Low              |  
+| **Complexity Handling**    | Low            | Moderate       | Low            | High              | Very High        |  
+
+---
+
+### **4. Recommendation**  
+#### For **Time-Series Data**:  
+- **Use Facebook Prophet** for ease of implementation and handling irregular time-series trends.  
+- **Use SARIMA** if data is clean and seasonal patterns are well-defined.
+
+#### For **Multi-Dimensional Data**:  
+- **Use Isolation Forest** for detecting cross-field anomalies in heterogeneous data.  
+- Consider **Autoencoders** if the data is very complex and relationships between attributes are highly non-linear.
+
+#### For **Low-Dimensional Static Data**:  
+- **Use Z-Score/Statistical Thresholding** for simple fields like sector classification.
+
+---
+
+Would you like a sample implementation plan for one of these models?
