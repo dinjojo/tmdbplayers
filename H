@@ -1,16 +1,45 @@
+To determine the best approach for implementing anomaly detection, here's an optimal order to proceed based on data complexity, ease of implementation, and the type of anomalies you want to detect:
+1. Start with Facebook Prophet
 
-SELECT 
-    o.name AS table_name,
-    CASE 
-        WHEN i.lockscheme = 0 THEN 'Allpages'
-        WHEN i.lockscheme = 1 THEN 'Datapages'
-        WHEN i.lockscheme = 2 THEN 'Datarows'
-        ELSE 'Unknown'
-    END AS locking_scheme
-FROM 
-    sysobjects o
-JOIN 
-    sysindexes i ON o.id = i.id
-WHERE 
-    o.type = 'U'  -- 'U' stands for user tables
-    AND i.indid < 2; -- 0 = table-level, 1 = clustered index
+    Why: It's easy to implement, handles irregular time-series data well, and automatically handles seasonality and missing values. If your primary data concerns time-series anomalies (e.g., listing prices, tick sizes), Prophet should be your first choice.
+    Steps:
+        Apply Prophet to historical time-series data (e.g., listing prices or expiry dates).
+        Generate forecasts and use the model to identify anomalies by comparing actual data to the predicted values.
+
+2. Try Z-Score/Statistical Thresholding for Simple Fields
+
+    Why: It's a simple and fast method for low-dimensional static data that follows a Gaussian distribution (e.g., sector classification or tick size).
+    Steps:
+        Calculate the Z-score (deviation from the mean) for each data point.
+        Flag data points that exceed a certain threshold (e.g., ±3 standard deviations) as anomalies.
+
+3. Use SARIMA for Well-Defined, Stationary Time-Series Data
+
+    Why: If Prophet’s forecasts are insufficient (e.g., due to lack of seasonality), SARIMA can be a more controlled choice for stationary, seasonal data.
+    Steps:
+        Use SARIMA for time-series data that require explicit modeling of trends and seasonality (e.g., for listing prices that follow a regular seasonal pattern).
+        Tune the ARIMA parameters and validate the model before applying anomaly detection.
+
+4. Implement Isolation Forest for Cross-Field Anomalies
+
+    Why: Once you're confident with time-series anomaly detection, Isolation Forest is the next step for detecting multi-dimensional anomalies across different fields (e.g., discrepancies between listing price and sector). It handles high-dimensional data and doesn't require assumptions about data distribution.
+    Steps:
+        Apply Isolation Forest on datasets with multiple features, like vendor feeds or attribute combinations.
+        Tune parameters like the number of trees and the maximum sample size for optimal results.
+
+5. Consider Autoencoders for High-Complexity, Multi-Dimensional Data
+
+    Why: If your data complexity increases and you're dealing with large datasets or non-linear patterns, Autoencoders can help capture intricate relationships between fields. However, they are computationally intensive and require deep learning knowledge.
+    Steps:
+        Implement Autoencoders after you've addressed basic anomalies using simpler models.
+        Fine-tune the architecture (layers, neurons) for anomaly detection based on the reconstruction error.
+
+Summary of Order:
+
+    Start with Facebook Prophet for time-series anomalies (easy implementation and robust handling of irregular data).
+    Use Z-Score/Statistical Thresholding for simple, low-dimensional data.
+    Try SARIMA for more controlled, seasonal time-series data.
+    Move to Isolation Forest for multi-dimensional anomaly detection.
+    Consider Autoencoders if your data is highly complex and high-dimensional.
+
+This approach allows you to handle simpler cases first, ensuring faster implementation and refining your detection models as complexity increases. Would you like help with setting up any specific model?
