@@ -1,4 +1,3 @@
-
 db.collection.aggregate([
   {
     $match: {
@@ -6,10 +5,16 @@ db.collection.aggregate([
     }
   },
   {
+    $project: {
+      action: { $trim: { input: "$action" } },
+      p2IssueId: { $trim: { input: "$p2IssueId" } }
+    }
+  },
+  {
     $group: {
       _id: {
-        action: "$action",
-        p2IssueId: "$p2IssueId"
+        action: { $toLower: "$action" },
+        p2IssueId: { $toLower: "$p2IssueId" }
       },
       count: { $sum: 1 }
     }
@@ -27,4 +32,4 @@ db.collection.aggregate([
       duplicateCount: "$count"
     }
   }
-]);
+]); 
