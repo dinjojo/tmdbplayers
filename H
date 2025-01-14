@@ -1,1 +1,30 @@
 
+db.collection.aggregate([
+  {
+    $match: {
+      sourceId: 4
+    }
+  },
+  {
+    $group: {
+      _id: {
+        action: "$action",
+        p2IssueId: "$p2IssueId"
+      },
+      count: { $sum: 1 }
+    }
+  },
+  {
+    $match: {
+      count: { $gt: 1 }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      action: "$_id.action",
+      p2IssueId: "$_id.p2IssueId",
+      duplicateCount: "$count"
+    }
+  }
+]);
