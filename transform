@@ -1,0 +1,168 @@
+# Create the requested text file with the optimized orchestration + mapping
+
+content = """================================================================================
+CORTEX AGENT ORCHESTRATION — OPTIMIZED TRANSFORMATION DISCOVERY FRAMEWORK
+================================================================================
+
+PURPOSE:
+This is a Cortex-optimized version of the Transformation Discovery Framework.
+It preserves full logical coverage while simplifying execution for LLM agents.
+
+CORE PRINCIPLES:
+- Never guess
+- Always validate statistically
+- Classify before transforming
+- Escalate when unclear
+
+================================================================================
+SECTION 1 — AGENT ORCHESTRATION FLOW
+================================================================================
+
+STEP 1 — MATCH CHECK
+----------------------------------------
+Call:
+run_match_test(legacy_col, modern_col)
+
+Interpret:
+- match_pct > 95% → CONFIRMED (NO_TRANSFORM or NORMALIZED)
+- match_pct 80–95% → PARTIAL → analyze mismatches
+- match_pct < 80% → proceed to classification
+
+----------------------------------------
+STEP 2 — CLASSIFY DIFFERENCE
+----------------------------------------
+Call:
+classify_difference(sample_mismatches)
+
+Returns:
+- NUMERIC
+- DATE
+- CATEGORICAL
+- TEXT
+- UNKNOWN
+
+If UNKNOWN → ESCALATE
+
+----------------------------------------
+STEP 3 — RESOLUTION BY TYPE
+----------------------------------------
+
+A. NUMERIC
+Call:
+numeric_scale_detector(legacy_col, modern_col)
+
+Decision:
+- match_pct > 95% → CONFIRMED
+- 80–95% → PARTIAL
+- <80% → run ratio_detector()
+- still <80% → ESCALATE
+
+----------------------------------------
+B. DATE
+----------------------------------------
+Call:
+date_format_detector(legacy_col)
+
+Then:
+validate_date_alignment(format)
+
+Decision:
+- exact_match >95% → CONFIRMED
+- within_3_days >95% → BUSINESS_DAY_OFFSET
+- else → ESCALATE
+
+----------------------------------------
+C. CATEGORICAL (CODE + BOOLEAN)
+----------------------------------------
+Call:
+categorical_mapping_detector(legacy_col, modern_col)
+
+Decision:
+- clean mapping → CONFIRMED
+- dominant mapping (>90%) → CONFIRMED + exceptions
+- ambiguous → ESCALATE
+
+----------------------------------------
+D. TEXT
+----------------------------------------
+Call:
+text_comparison_analyzer(legacy_col, modern_col)
+
+Decision:
+- classify only (no auto transformation)
+
+----------------------------------------
+E. RATING (SPECIAL CASE)
+----------------------------------------
+Call:
+rating_normalizer(legacy_col, modern_col)
+
+Decision:
+- normalized match >90% → CONFIRMED
+- agency mismatch → ESCALATE
+
+----------------------------------------
+STEP 4 — SENTINEL NORMALIZATION
+----------------------------------------
+Trigger if null mismatch >5%
+
+Call:
+detect_sentinels(legacy_col, modern_col)
+
+Then:
+retest_match_with_sentinels()
+
+If improvement >5% → include in transformation
+
+----------------------------------------
+STEP 5 — FINAL DECISION
+----------------------------------------
+- match_pct >95% → ETL_CODEBOOK
+- match_pct 80–95% → ETL_CODEBOOK + residual classification
+- match_pct <80% → ESCALATION
+
+================================================================================
+SECTION 2 — MAPPING TO ORIGINAL FRAMEWORK
+================================================================================
+
+T1 → STEP 1 (MATCH CHECK)
+- Raw and normalized match preserved
+- SQL abstracted into tool
+
+T2 → STEP 2 (CLASSIFICATION)
+- All families preserved (numeric, date, code, boolean, text, rating)
+
+T3-NUMERIC → numeric_scale_detector()
+- Hypotheses, MAE, stddev, ratio logic preserved
+
+T3-DATE → date_format_detector()
+- All formats + business day logic preserved
+
+T3-CODE → categorical_mapping_detector()
+- Co-occurrence + dominance logic preserved
+
+T3-BOOLEAN → inside categorical
+- Normalization + inversion detection preserved
+
+T3-TEXT → text analyzer
+- Abbreviation and mismatch classification preserved
+
+T3-RATING → rating_normalizer()
+- Notation, ordinal, agency checks preserved
+
+T4 → sentinel detection
+- Sentinel patterns + validation preserved
+
+T5 → final decision
+- ETL_CODEBOOK and ESCALATION preserved
+
+================================================================================
+END OF FILE
+================================================================================
+"""
+
+file_path = "/mnt/data/cortex_optimized_transformation_framework.txt"
+with open(file_path, "w") as f:
+    f.write(content)
+
+file_path
